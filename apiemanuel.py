@@ -1,30 +1,42 @@
-r"""
- _____                                  _ 
-| ____|_ __ ___   __ _ _ __  _   _  ___| |
-|  _| | '_ ` _ \ / _` | '_ \| | | |/ _ \ |
-| |___| | | | | | (_| | | | | |_| |  __/ |
-|_____|_| |_| |_|\__,_|_| |_|\__,_|\___|_|
-
-Autor: Emanuel Italo
-Versão: 0.0.0.1
-Data: 25/09/2025
-"""
-
-from flask import Flask, render_template
-
+from flask import Flask, redirect, url_for, request, render_template
+from requests import get
 app = Flask(__name__)
 
-@app.route("/")
-def inicio():
-    return "<h1>Bem-vindo à minha página</h1>"
 
-@app.route("/sobre")
-def informacoes():
-    return "<marquee> Emanuel italo leal </marquee>"
+@app.route('/')
+def pagina_inicial():
+    return render_template('inicio.html')
 
-@app.route("/saudacao/<nome>")
-def saudacao(nome):
-    return f"<h1> Bem vindo </h1>{nome}"
+@app.route('/entrar')
+def fazer_login():
+    return render_template('login.html')
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route('/pagina403')
+def pagina403():
+    return render_template('pagina403.html')
+
+@app.route('/welcome')
+def welcome():
+    return render_template('welcome.html')
+
+@app.route('/validador', methods=['POST', 'GET'])
+def validador():
+    acesso_u = 'Emanuel'
+    acesso_s = '123'
+    if request.method == 'POST':
+        usuario = request.form['c_usuario']
+        senha = request.form['c_senha']
+        if usuario == acesso_u and senha == acesso_s:
+            return redirect(url_for('welcome'))
+        else:
+            return redirect(url_for('pagina403'))
+    else:
+        usuario = request.args.get('c_usuario')
+        senha = request.args.get('c_senha')
+        if usuario == acesso_u and senha == acesso_s:
+            return redirect(url_for('welcome'))
+        else:
+            return redirect(url_for('pagina403'))
+
+if __name__ == '__main__':
+    app.run('0.0.0.0')
